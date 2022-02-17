@@ -1,2 +1,3 @@
 const ApiBaseUrl="http://localhost:5000/admin"
-export default ApiBaseUrl
+const ImageBaseUrl="http://localhost:5000/uploads"
+export  {ApiBaseUrl,ImageBaseUrl}

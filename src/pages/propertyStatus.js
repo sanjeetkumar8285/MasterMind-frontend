@@ -4,7 +4,7 @@ import React,{
   useImperativeHandle,
   useRef, 
  forwardRef} from 'react';
-import ApiBaseUrl from '../config/ApiBaseUrl';
+import {ApiBaseUrl} from '../config/ApiBaseUrl';
 import {Button,Modal} from 'react-bootstrap'
 import { ToastContainer, toast } from 'react-toastify';
 

@@ -29,6 +29,12 @@ const Sidebar = () => {
           </li>
 
           <li className="nav-item">
+            <Link className="nav-link" to="/blog">
+              <i className="mdi mdi-blogger menu-icon"></i>
+              <span className="menu-title">Blogs</span>
+            </Link>
+          </li>
+          {/* <li className="nav-item">
             <a className="nav-link" data-bs-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
               <i className="mdi mdi-account menu-icon"></i>
               <span className="menu-title">User Pages</span>
@@ -43,7 +49,7 @@ const Sidebar = () => {
                 <li className="nav-item"> <Link className="nav-link" to="/testing"> Testing </Link></li>
               </ul>
             </div>
-          </li>
+          </li> */}
 
         </ul>
       </nav>

@@ -7,7 +7,7 @@ import PropertyType from './pages/propertyType';
 import PropertyStatus from './pages/propertyStatus';
 import Properties from "./pages/Properties"
 import Amenities from './pages/Amenities';
-import Testing from './pages/Testing';
+import Blog from './pages/Blog';
 
 const AppRoute = () => {
     return (
@@ -20,9 +20,8 @@ const AppRoute = () => {
   <Route path='/propertyType' element={<PropertyType/>}/>
   <Route path='/propertyStatus' element={<PropertyStatus/>}/>
   <Route path='/amenities' element={<Amenities/>}/>
-  <Route path='/testing' element={<Testing/>}/>
+  <Route path='/blog' element={<Blog/>}/>
   </Routes>
-
       </>
     );
 };

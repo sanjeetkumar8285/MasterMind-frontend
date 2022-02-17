@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 function App() {
   return (
   <>
+  
    <div class="container-scroller">
         <Header/>
       <div class="container-fluid page-body-wrapper">
@@ -15,7 +16,7 @@ function App() {
             <AppRoute/>
              </div>
              </div>
-    
+
   </>
 
   );

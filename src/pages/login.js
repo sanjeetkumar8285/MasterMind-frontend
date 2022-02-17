@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import ApiBaseUrl from '../config/ApiBaseUrl';
+import {ApiBaseUrl} from '../config/ApiBaseUrl';
 import { useNavigate } from 'react-router-dom';
 const Login = () => {
 const navigate=useNavigate();
