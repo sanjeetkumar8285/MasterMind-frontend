@@ -1,6 +1,11 @@
 import React from 'react';
-
+import { useNavigate } from 'react-router-dom';
 const Header = () => {
+  const navigate=useNavigate();
+  const logout=()=>{
+localStorage.clear();
+navigate("/login")
+  }
     return (
        <>
        <nav className="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
@@ -14,7 +19,7 @@ const Header = () => {
         </div>  
       </div>
       <div className="navbar-menu-wrapper d-flex align-items-center justify-content-end">
-        <ul className="navbar-nav mr-lg-4 w-100">
+        {/* <ul className="navbar-nav mr-lg-4 w-100">
           <li className="nav-item nav-search d-none d-lg-block w-100">
             <div className="input-group">
               <div className="input-group-prepend">
@@ -25,7 +30,7 @@ const Header = () => {
               <input type="text" className="form-control" placeholder="Search now" aria-label="search" aria-describedby="search"/>
             </div>
           </li>
-        </ul>
+        </ul> */}
         <ul className="navbar-nav navbar-nav-right">
           <li className="nav-item dropdown me-1">
             <a className="nav-link count-indicator dropdown-toggle d-flex justify-content-center align-items-center" id="messageDropdown" href="#" data-bs-toggle="dropdown">
@@ -130,10 +135,10 @@ const Header = () => {
                 <i className="mdi mdi-settings text-primary"></i>
                 Settings
               </a>
-              <a className="dropdown-item">
+              <button className="dropdown-item" onClick={logout}>
                 <i className="mdi mdi-logout text-primary"></i>
                 Logout
-              </a>
+              </button>
             </div>
           </li>
         </ul>

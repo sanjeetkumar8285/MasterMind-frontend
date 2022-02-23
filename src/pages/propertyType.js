@@ -22,7 +22,7 @@ const PropertyType = () => {
  
 
   const token=localStorage.getItem("token")
-
+const [search,setSearch]=useState("");
 //this state is used to store the data coming from api
   const [propertyTypeData,setPropertyTypeData]=useState({});
 
@@ -38,9 +38,9 @@ return {...prev,[name]:value}
       },[])
     
       const showData=async()=>{
-    console.log(token)
+   
         try{
-          const res=await fetch(`${ApiBaseUrl}/propertyType`,{
+          const res=await fetch(`${ApiBaseUrl}/propertyType?keyword=${search}`,{
             method:"GET",
          
             headers:{
@@ -61,7 +61,7 @@ return {...prev,[name]:value}
           console.log(err)
         }
       }
-    
+   
       const deletPropertyType=async(id)=>{
         try{
           const res=await fetch(`${ApiBaseUrl}/propertyType/${id}`,{
@@ -131,10 +131,20 @@ try{
              <div className="main-panel">
         <div className="content-wrapper">
           <div className="row">
+    
+          <div className="col-md-12 grid-margin d-flex">
+                  {/* <div className="row"> */}
+                    <div className="col-xl-4">
 
-          <div className="col-md-12 grid-margin">
-                  <div className="row">
-                    <div className="col-12 col-xl-4 offset-10">
+                    <div className="form-group" style={{display:"flex"}}>
+                    <input type="search" className="form-control" placeholder="Search" 
+                    onChange={(e)=>{setSearch(e.target.value)}}
+                    onKeyPress={(e)=>{e.key==="Enter" && showData()}}/>
+                    <button onClick={showData} className="btn btn-success">Search</button>
+                    </div>
+                 
+                    </div>
+                    <div className="col-12 col-xl-4 " style={{position: "relative",left: "50%"}} >
                     <Button variant="primary" style={{color:"white"}} onClick={handleShow}>
                     <i className="fas fa-plus"/> Add New
       </Button>
@@ -182,6 +192,8 @@ try{
         </Modal.Footer>
       </Modal>
                     </div>
+                
+     
                   </div>
                 </div>
 
@@ -228,7 +240,7 @@ try{
                     </table>
                   </div>
                 </div>
-              </div>
+              {/* </div> */}
             </div>
       
        </div>

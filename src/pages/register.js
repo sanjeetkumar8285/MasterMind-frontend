@@ -43,7 +43,7 @@ if(validForm()){
         alert(data.message)
     }else{
         alert(data.message)
-         navigate("/")
+         navigate("/login")
     }
     }
 }

@@ -15,6 +15,7 @@ const Amenities = () => {
     const handleShow = () => setShow(true);
 
   const formUpdateRef=useRef();
+  const [search,setSearch]=useState("")
 const [amenities,setAmenities]=useState({});
 
 const handleInput=(e)=>{
@@ -31,7 +32,7 @@ const token = localStorage.getItem("token")
 
     const showData=async()=>{
         try{
-        const res=await fetch(`${ApiBaseUrl}/amenities`,{
+        const res=await fetch(`${ApiBaseUrl}/amenities?keyword=${search}`,{
             method:"GET",
             headers:{
                 "Content-Type":"application/json",
@@ -124,7 +125,15 @@ try{
 
           <div className="col-md-12 grid-margin">
                   <div className="row">
-                    <div className="col-12 col-xl-4 offset-10">
+                  <div className="col-xl-4">
+                    <div className="form-group" style={{display:"flex"}}>
+                    <input type="search" className="form-control" placeholder="Search" 
+                    onChange={(e)=>{setSearch(e.target.value)}}
+                    onKeyPress={(e)=>{e.key==="Enter" && showData()}}/>
+                    <button onClick={showData} className="btn btn-success">Search</button>
+                    </div>
+                    </div>
+                    <div className="col-12 col-xl-4 " style={{position: "relative",left: "50%"}} >
                     <Button variant="primary" style={{color:"white"}} onClick={handleShow}>
                     <i className="fas fa-plus"/> Add New
       </Button>

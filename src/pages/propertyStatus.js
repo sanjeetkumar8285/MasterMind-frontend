@@ -18,6 +18,7 @@ const PropertyStatus = () => {
 //this state is used to store the data of form
 const [propertyData,setPropertyData]=useState({});
 
+const [search,setSearch]=useState("")
   const token=localStorage.getItem("token")
   //this state is used to store the data coming from api
   const [propertyStatusData,setPropertyStatusData]=useState({});
@@ -36,9 +37,8 @@ return {...prev,[name]:value}
       },[])
     
       const showData=async()=>{
-    console.log(token)
         try{
-          const res=await fetch(`${ApiBaseUrl}/propertyStatus`,{
+          const res=await fetch(`${ApiBaseUrl}/propertyStatus?keyword=${search}`,{
             method:"GET",
          
             headers:{
@@ -48,7 +48,6 @@ return {...prev,[name]:value}
             },
           })
           const data=await res.json();
-          console.log(data.data[0].status)
           if(res.status===400 || !data){
             console.log(data.message)
             alert(data.message)
@@ -134,7 +133,17 @@ try{
 
           <div className="col-md-12 grid-margin">
                   <div className="row">
-                    <div className="col-12 col-xl-4 offset-10">
+                  <div className="col-xl-4">
+                    <div className="form-group" style={{display:"flex"}}>
+                    <input type="search" className="form-control" 
+                    placeholder="Search" 
+                    onChange={(e)=>{setSearch(e.target.value)}}
+                    onKeyPress={(e)=>{e.key==="Enter" && showData()}}
+                    />
+                    <button onClick={showData} className="btn btn-success">Search</button>
+                    </div>
+                    </div>
+                    <div className="col-12 col-xl-4 " style={{position: "relative",left: "50%"}} >
                     <Button variant="primary" style={{color:"white"}} onClick={handleShow}>
                     <i className="fas fa-plus"/> Add New
       </Button>

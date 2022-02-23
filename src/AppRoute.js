@@ -13,8 +13,8 @@ const AppRoute = () => {
     return (
         <>
     <Routes>
-  <Route path="/login" exact element={<Login/>}></Route>
-  <Route path="/register" element={<Register/>}/> 
+  {/* <Route path="/login" exact element={<Login/>}></Route>
+  <Route path="/register" element={<Register/>}/>  */}
   <Route path='/dashboard' element={<Dashboard/>}/>
   <Route path="/property" element={<Properties/>}/>
   <Route path='/propertyType' element={<PropertyType/>}/>

@@ -12,6 +12,9 @@ const Blog = () => {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     const formUpdateRef=useRef();
+
+    const [search,setSearch]=useState("")
+
     const [blog,setBlog]=useState({})
     const [blogData,setBlogData]=useState({}) //this state is used for store state data
 
@@ -71,7 +74,7 @@ else{
 
     const showData=async()=>{
         try{
-            const res=await fetch(`${ApiBaseUrl}/blog`,{
+            const res=await fetch(`${ApiBaseUrl}/blog?keyword=${search}`,{
                 method:"GET",
                 headers:{
                     "Content-Type":"application/json",
@@ -125,7 +128,15 @@ toast.error(err)
 
           <div className="col-md-12 grid-margin">
                   <div className="row">
-                    <div className="col-12 col-xl-4 offset-10">
+                  <div className="col-xl-4">
+                    <div className="form-group" style={{display:"flex"}}>
+                    <input type="search" className="form-control" placeholder="Search" 
+                    onChange={(e)=>{setSearch(e.target.value)}}
+                    onKeyPress={(e)=>{e.key==="Enter" && showData()}}/>
+                    <button onClick={showData} className="btn btn-success">Search</button>
+                    </div>
+                    </div>
+                    <div className="col-12 col-xl-4 " style={{position: "relative",left: "50%"}} >
                     <Button variant="primary" style={{color:"white"}} onClick={handleShow}>
                     <i className="fas fa-plus"/> Add New
       </Button>
@@ -157,7 +168,7 @@ toast.error(err)
             <div className="col-md-12">
             <div className="form-group">
             <label htmlFor="about">About</label>
-            <textarea className="form-control" name="blogDescription" placeHolder="Blog Description "
+            <textarea className="form-control" style={{resize:"vertical"}} name="blogDescription" placeholder="Blog Description "
                                rows="6" value={blog.blogDescription} onChange={handleInput} ></textarea>
                             </div>
                           </div>
@@ -348,7 +359,7 @@ const UpdateForm = forwardRef((props, ref) => {
     <Modal show={show} onHide={handleClose} backdrop="static"
         keyboard={false} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>Add Blog</Modal.Title>
+          <Modal.Title>Update Blog</Modal.Title>
         </Modal.Header>
         <Modal.Body>
         <form className="forms-sample">
@@ -373,7 +384,7 @@ const UpdateForm = forwardRef((props, ref) => {
             <div className="col-md-12">
             <div className="form-group">
             <label htmlFor="about">About</label>
-            <textarea className="form-control" name="blogDescription" placeHolder="Blog Description "
+            <textarea className="form-control" style={{resize:"vertical"}} name="blogDescription" placeholder="Blog Description "
                                rows="6" value={blog.blogDescription} onChange={handleInput} ></textarea>
                             </div>
                           </div>

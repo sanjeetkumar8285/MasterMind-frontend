@@ -14,7 +14,7 @@ const Properties = () => {
   const handleShow = () => setShow(true);
 
   const formUpdateRef=useRef();
-
+  const [search,setSearch]=useState("")
   const [propertyStatusData,setPropertyStatusData]=useState({}); //this state is used for storing data of propertyStatus
   const [propertyTypeData,setPropertyTypeData]=useState({});    //this state is used for storing data of propertyType
   const [amenitiesData,setAmenitiesData]=useState({});      ////this state is used for storing data of amenities
@@ -63,7 +63,7 @@ const Properties = () => {
   const showData = async () => {
     console.log(token)
     try {
-      const res = await fetch(`${ApiBaseUrl}/property`, {
+      const res = await fetch(`${ApiBaseUrl}/property?keyword=${search}`, {
         method: "GET",
         headers: {
           Accept: "application/json",
@@ -288,16 +288,23 @@ const getAmenities=async()=>{
 
   return (
     <>
-    <UpdateForm ref={formUpdateRef} showData={showData} getPropertyType={getPropertyType}
-    getPropertyStatus={getPropertyStatus} getAmenities={getAmenities}/>
+    <UpdateForm ref={formUpdateRef} showData={showData} />
       <div className="main-panel">
         <div className="content-wrapper">
           <div className="row">
             <div className="col-md-12 grid-margin">
               <div className="row">
-                <div className="col-12 col-xl-4 offset-10">
-                  <Button variant="primary" style={{ color: "white" }} onClick={handleShow}>
-                    <i className="fas fa-plus" /> Add New
+              <div className="col-xl-4">
+                    <div className="form-group" style={{display:"flex"}}>
+                    <input type="search" className="form-control" placeholder="Search"
+                     onChange={(e)=>{setSearch(e.target.value)}}
+                     onKeyPress={(e)=>{e.key==="Enter" && showData()}}/>
+                    <button onClick={showData} className="btn btn-success">Search</button>
+                    </div>
+                    </div>
+                    <div className="col-12 col-xl-4 " style={{position: "relative",left: "50%"}} >
+                    <Button variant="primary" style={{color:"white"}} onClick={handleShow}>
+                    <i className="fas fa-plus"/> Add New
                   </Button>
                   <Modal show={show} onHide={handleClose} backdrop="static"
                     keyboard={false} size="xl">
@@ -386,7 +393,7 @@ const getAmenities=async()=>{
                           <div className="col-md-12">
                             <div className="form-group">
                               <label htmlFor="about">About</label>
-                              <textarea className="form-control" name="about" placeHolder="About Property Details "
+                              <textarea className="form-control" style={{resize:"vertical"}} name="about" placeHolder="About Property Details "
                                rows="6" value={formData.about} onChange={handleInput} ></textarea>
                             </div>
                           </div>
@@ -1054,7 +1061,7 @@ console.log(id)
                           <div className="col-md-12">
                             <div className="form-group">
                               <label htmlFor="about">About</label>
-                              <textarea className="form-control" name="about" placeHolder="About Property Details "
+                              <textarea className="form-control" style={{resize:"vertical"}} name="about" placeHolder="About Property Details "
                                rows="6" value={formData.about} onChange={handleInput} ></textarea>
                             </div>
                           </div>

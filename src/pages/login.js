@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState,useContext } from 'react';
 import { Link } from 'react-router-dom';
 import {ApiBaseUrl} from '../config/ApiBaseUrl';
 import { useNavigate } from 'react-router-dom';
+import { UserContext } from '../App';
 const Login = () => {
+  // const {state,dispatch}=useContext(UserContext)
 const navigate=useNavigate();
 
     const [email,setEmail]=useState("");
@@ -34,6 +36,7 @@ const navigate=useNavigate();
                     alert(data.message)
                 }else{
                   localStorage.setItem("token",data.token)
+                  // dispatch({type:"USER",payload:true})
                     alert(data.message)
                      navigate("/dashboard")
                 }
