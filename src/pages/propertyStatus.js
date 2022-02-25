@@ -5,8 +5,12 @@ import React,{
   useRef, 
  forwardRef} from 'react';
 import {ApiBaseUrl} from '../config/ApiBaseUrl';
+import ReactPaginate from "react-paginate";
 import {Button,Modal} from 'react-bootstrap'
 import { ToastContainer, toast } from 'react-toastify';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogTitle from '@mui/material/DialogTitle';
 
 const PropertyStatus = () => {
   //this state is used to hide and show modal
@@ -15,6 +19,16 @@ const PropertyStatus = () => {
   const handleShow = () => setShow(true);
 
   const formUpdateRef=useRef();
+
+  const [open, setOpen] = useState({show:false,id:null});
+
+  const handleClickOpen = (id) => {
+    setOpen({show:true,id});
+  };
+  const handleClickClose = () => {
+    setOpen({show:false,id:null});
+  };
+
 //this state is used to store the data of form
 const [propertyData,setPropertyData]=useState({});
 
@@ -38,7 +52,7 @@ return {...prev,[name]:value}
     
       const showData=async()=>{
         try{
-          const res=await fetch(`${ApiBaseUrl}/propertyStatus?keyword=${search}`,{
+          const res=await fetch(`${ApiBaseUrl}/propertyStatus?page=1`,{
             method:"GET",
          
             headers:{
@@ -59,9 +73,9 @@ return {...prev,[name]:value}
         }
       }
     
-      const deletPropertyStatus=async(id)=>{
+      const deletPropertyStatus=async()=>{
         try{
-            const res=await fetch(`${ApiBaseUrl}/propertyStatus/${id}`,{
+            const res=await fetch(`${ApiBaseUrl}/propertyStatus/${open.id}`,{
               method:"DELETE",
               headers:{
                 "Content-Type":"application/json",
@@ -77,6 +91,7 @@ return {...prev,[name]:value}
                   position: "top-center",
                   autoClose: 4000,
                   });
+                  setOpen({show:false,id:null})
               showData();
             }
           }catch(err){
@@ -121,11 +136,73 @@ try{
 }
     }
 
+    const searchData=async()=>{
+      try{
+        const res=await fetch(`${ApiBaseUrl}/getPropertyStatus?keyword=${search}`,{
+          method:"GET",
+       
+          headers:{
+              Accept:"application/json",
+              "Content-Type":"application/json",
+              "authorization":token
+          },
+        })
+        const data=await res.json();
+        if(res.status===400 || !data){
+          console.log(data.message)
+          alert(data.message)
+        }else{
+          setPropertyStatusData(data)
+        }
+      }catch(err){
+        console.log(err)
+      }
+    }
+ 
+    const fetchProperty = async (currentPage) => {
+      try{
+        const res=await fetch(`${ApiBaseUrl}/propertyStatus?page=${currentPage}`,{
+          method:"GET",
+          headers:{
+              "Content-Type":"application/json",
+              "authorization":token
+          },
+        })
+      const data = await res.json();
+      return data;
+    }catch(err){
+      console.log(err)
+    }
+  }
+    const handlePageClick=async(data)=>{
+      let currentPage = data.selected + 1;
+      const dataFromServer = await fetchProperty(currentPage);
 
-   
+      setPropertyStatusData(dataFromServer);
+    }
+
     return (
         <>
          <UpdateForm ref={formUpdateRef} showData={showData}/>
+
+         <Dialog
+        open={open.show}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Are you Sure want to Delete ?"}
+        </DialogTitle>
+       
+        <DialogActions>
+          <Button onClick={handleClickClose}>Cancel</Button>
+          <Button onClick={deletPropertyStatus} autoFocus>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+
              <div className="main-panel">
         <div className="content-wrapper">
           <div className="row">
@@ -138,9 +215,9 @@ try{
                     <input type="search" className="form-control" 
                     placeholder="Search" 
                     onChange={(e)=>{setSearch(e.target.value)}}
-                    onKeyPress={(e)=>{e.key==="Enter" && showData()}}
+                    onKeyPress={(e)=>{e.key==="Enter" && searchData()}}
                     />
-                    <button onClick={showData} className="btn btn-success">Search</button>
+                    <button onClick={searchData} className="btn btn-success">Search</button>
                     </div>
                     </div>
                     <div className="col-12 col-xl-4 " style={{position: "relative",left: "50%"}} >
@@ -224,8 +301,7 @@ try{
           <Button className='btn btn-sm' style={{backgroundColor:"white"}} onClick={() => {
                           formUpdateRef.current.openForm(data);
                         }}><i className="fas fa-edit"></i></Button>
-          <Button className='btn btn-sm' style={{backgroundColor:"white"}}  onClick={() => {
-                    if(window.confirm("Are you sure want to delete ?")){ deletPropertyStatus(data._id)} }}><i className="fas fa-trash" style={{color:"red"}}></i>
+          <Button className='btn btn-sm' style={{backgroundColor:"white"}}  onClick={()=>{handleClickOpen(data._id)}}><i className="fas fa-trash" style={{color:"red"}}></i>
               </Button>  </div></td>
                             </tr>
                             )
@@ -236,6 +312,25 @@ try{
                     </table>
                   </div>
                 </div>
+                <ReactPaginate
+        previousLabel={"previous"}
+        nextLabel={"next"}
+        breakLabel={"..."}
+        pageCount={propertyStatusData.numberofPage}
+        marginPagesDisplayed={2}
+        pageRangeDisplayed={3}
+        onPageChange={handlePageClick}
+        containerClassName={"pagination justify-content-center"}
+        pageClassName={"page-item"}
+        pageLinkClassName={"page-link"}
+        previousClassName={"page-item"}
+        previousLinkClassName={"page-link"}
+        nextClassName={"page-item"}
+        nextLinkClassName={"page-link"}
+        breakClassName={"page-item"}
+        breakLinkClassName={"page-link"}
+        activeClassName={"active"}
+      />
               </div>
             </div>
       

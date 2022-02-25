@@ -4,11 +4,13 @@ import React,{
   useImperativeHandle,
   useRef, 
  forwardRef} from 'react';
-
+ import ReactPaginate from "react-paginate";
 import {ApiBaseUrl} from '../config/ApiBaseUrl';
 import {Button,Modal} from 'react-bootstrap'
 import { ToastContainer, toast } from 'react-toastify';
-
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogTitle from '@mui/material/DialogTitle';
 const PropertyType = () => {
   //this state is used to hide and show modal
   const [show, setShow] = useState(false);
@@ -17,12 +19,24 @@ const PropertyType = () => {
 
   const formUpdateRef=useRef();
 
+  const [open, setOpen] = useState({show:false,id:null});
+
+  const handleClickOpen = (id) => {
+    setOpen({show:true,id});
+  };
+
+  const handleClickClose = () => {
+    setOpen({show:false,id:null});
+  };
+
+ 
 //this state is used to store the data of form
   const [propertyData,setPropertyData]=useState({});
  
 
   const token=localStorage.getItem("token")
 const [search,setSearch]=useState("");
+
 //this state is used to store the data coming from api
   const [propertyTypeData,setPropertyTypeData]=useState({});
 
@@ -40,7 +54,7 @@ return {...prev,[name]:value}
       const showData=async()=>{
    
         try{
-          const res=await fetch(`${ApiBaseUrl}/propertyType?keyword=${search}`,{
+          const res=await fetch(`${ApiBaseUrl}/propertyType?page=1`,{
             method:"GET",
          
             headers:{
@@ -50,7 +64,6 @@ return {...prev,[name]:value}
             },
           })
           const data=await res.json();
-          console.log(data.data[0].status)
           if(res.status===400 || !data){
             console.log(data.message)
             alert(data.message)
@@ -62,9 +75,10 @@ return {...prev,[name]:value}
         }
       }
    
-      const deletPropertyType=async(id)=>{
+      const deletPropertyType=async()=>{
         try{
-          const res=await fetch(`${ApiBaseUrl}/propertyType/${id}`,{
+          
+          const res=await fetch(`${ApiBaseUrl}/propertyType/${open.id}`,{
             method:"DELETE",
             headers:{
               "Content-Type":"application/json",
@@ -80,7 +94,7 @@ return {...prev,[name]:value}
               position: "top-center",
               autoClose: 4000,
               });
-             
+             setOpen({show:false,id:null})
             showData();
           }
         }catch(err){
@@ -124,9 +138,72 @@ try{
   toast.error(err)
 }
     }
+    const fetchProperty = async (currentPage) => {
+      try{
+        const res=await fetch(`${ApiBaseUrl}/propertyType?page=${currentPage}`,{
+          method:"GET",
+          headers:{
+              "Content-Type":"application/json",
+              "authorization":token
+          },
+        })
+      const data = await res.json();
+      return data;
+    }catch(err){
+      console.log(err)
+    }
+  }
+    const handlePageClick=async(data)=>{
+      let currentPage = data.selected + 1;
+      const dataFromServer = await fetchProperty(currentPage);
 
+      setPropertyTypeData(dataFromServer);
+    }
+
+    const searchData=async()=>{
+      try{
+        const res=await fetch(`${ApiBaseUrl}/getPropertyType?keyword=${search}`,{
+          method:"GET",
+       
+          headers:{
+              Accept:"application/json",
+              "Content-Type":"application/json",
+              "authorization":token
+          },
+        })
+        const data=await res.json();
+        if(res.status===400 || !data){
+          console.log(data.message)
+          alert(data.message)
+        }else{
+          setPropertyTypeData(data)
+        }
+      }catch(err){
+        console.log(err)
+      }
+    }
+ 
+    
     return (
         <>
+           <Dialog
+        open={open.show}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Are you Sure want to Delete ?"}
+        </DialogTitle>
+       
+        <DialogActions>
+          <Button onClick={handleClickClose}>Cancel</Button>
+          <Button onClick={deletPropertyType} autoFocus>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+
         <UpdateForm ref={formUpdateRef} showData={showData}/>
              <div className="main-panel">
         <div className="content-wrapper">
@@ -139,8 +216,8 @@ try{
                     <div className="form-group" style={{display:"flex"}}>
                     <input type="search" className="form-control" placeholder="Search" 
                     onChange={(e)=>{setSearch(e.target.value)}}
-                    onKeyPress={(e)=>{e.key==="Enter" && showData()}}/>
-                    <button onClick={showData} className="btn btn-success">Search</button>
+                    onKeyPress={(e)=>{e.key==="Enter" && searchData()}}/>
+                    <button onClick={searchData} className="btn btn-success">Search</button>
                     </div>
                  
                     </div>
@@ -228,24 +305,46 @@ try{
           <Button className='btn btn-sm' style={{backgroundColor:"white"}}  onClick={() => {
                           formUpdateRef.current.openForm(data);
                         }}><i className="fas fa-edit"></i></Button>
-          <Button className='btn btn-sm' style={{backgroundColor:"white"}}  onClick={() => {
-                    if(window.confirm("Are you sure want to delete ?")){ deletPropertyType(data._id)} }}><i className="fas fa-trash" style={{color:"red"}}></i>
-              </Button>  </div></td>
+          <Button className='btn btn-sm' variant="outlined" style={{backgroundColor:"white"}} onClick={()=>{handleClickOpen(data._id)}} >
+          <i className="fas fa-trash" style={{color:"red"}}></i>
+              </Button>
+             
+                </div></td>
                             </tr>
                             )
                           })
                         }
-                       
+                      
                       </tbody>
                     </table>
                   </div>
                 </div>
-              {/* </div> */}
+                <ReactPaginate
+        previousLabel={"previous"}
+        nextLabel={"next"}
+        breakLabel={"..."}
+        pageCount={propertyTypeData.numberofPage}
+        marginPagesDisplayed={2}
+        pageRangeDisplayed={3}
+        onPageChange={handlePageClick}
+        containerClassName={"pagination justify-content-center"}
+        pageClassName={"page-item"}
+        pageLinkClassName={"page-link"}
+        previousClassName={"page-item"}
+        previousLinkClassName={"page-link"}
+        nextClassName={"page-item"}
+        nextLinkClassName={"page-link"}
+        breakClassName={"page-item"}
+        breakLinkClassName={"page-link"}
+        activeClassName={"active"}
+      />
             </div>
       
        </div>
+
        </div>
        </div> 
+    
      <ToastContainer/>
         </>
     );

@@ -4,6 +4,10 @@ import React,{
   useImperativeHandle,
   useRef, 
  forwardRef} from 'react';
+ import ReactPaginate from "react-paginate";
+ import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogTitle from '@mui/material/DialogTitle';
 import {ApiBaseUrl} from '../config/ApiBaseUrl';
 import { Button, Modal } from 'react-bootstrap'
 import { ToastContainer, toast } from 'react-toastify';
@@ -15,6 +19,15 @@ const Amenities = () => {
     const handleShow = () => setShow(true);
 
   const formUpdateRef=useRef();
+  const [open, setOpen] = useState({show:false,id:null});
+
+  const handleClickOpen = (id) => {
+    setOpen({show:true,id});
+  };
+  const handleClickClose = () => {
+    setOpen({show:false,id:null});
+  };
+
   const [search,setSearch]=useState("")
 const [amenities,setAmenities]=useState({});
 
@@ -32,7 +45,7 @@ const token = localStorage.getItem("token")
 
     const showData=async()=>{
         try{
-        const res=await fetch(`${ApiBaseUrl}/amenities?keyword=${search}`,{
+        const res=await fetch(`${ApiBaseUrl}/amenities?page=1`,{
             method:"GET",
             headers:{
                 "Content-Type":"application/json",
@@ -90,9 +103,9 @@ try{
 }
     }
     
-    const deleteAmenities=async(id)=>{
+    const deleteAmenities=async()=>{
         try{
-            const res=await fetch(`${ApiBaseUrl}/amenities/${id}`,{
+            const res=await fetch(`${ApiBaseUrl}/amenities/${open.id}`,{
               method:"DELETE",
               headers:{
                 "Content-Type":"application/json",
@@ -108,6 +121,7 @@ try{
                 position: "top-center",
                 autoClose: 4000,
                 });
+                setOpen({show:false,id:null})
               showData();
             }
           }catch(err){
@@ -116,9 +130,68 @@ try{
           }
     }
 
+    const fetchAmenities = async (currentPage) => {
+      try{
+        const res=await fetch(`${ApiBaseUrl}/amenities?page=${currentPage}`,{
+          method:"GET",
+          headers:{
+              "Content-Type":"application/json",
+              "authorization":token
+          },
+        })
+      const data = await res.json();
+      return data;
+    }catch(err){
+      console.log(err)
+    }
+  }
+    const handlePageClick=async(data)=>{
+      let currentPage = data.selected + 1;
+      const dataFromServer = await fetchAmenities(currentPage);
+      setAmenitiesData(dataFromServer)
+    }
+
+    const searchData=async()=>{
+      try{
+        const res=await fetch(`${ApiBaseUrl}/getAmenities?keyword=${search}`,{
+          method:"GET",
+       
+          headers:{
+              Accept:"application/json",
+              "Content-Type":"application/json",
+              "authorization":token
+          },
+        })
+        const data=await res.json();
+        if(res.status===400 || !data){
+          console.log(data.message)
+        }else{
+          setAmenitiesData(data)
+        }
+      }catch(err){
+        console.log(err)
+      }
+    }
     return (
         <>
                 <UpdateForm ref={formUpdateRef} showData={showData}/>
+                <Dialog
+        open={open.show}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Are you Sure want to Delete ?"}
+        </DialogTitle>
+       
+        <DialogActions>
+          <Button onClick={handleClickClose}>Cancel</Button>
+          <Button onClick={deleteAmenities} autoFocus>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
                 <div className="main-panel">
         <div className="content-wrapper">
           <div className="row">
@@ -129,8 +202,8 @@ try{
                     <div className="form-group" style={{display:"flex"}}>
                     <input type="search" className="form-control" placeholder="Search" 
                     onChange={(e)=>{setSearch(e.target.value)}}
-                    onKeyPress={(e)=>{e.key==="Enter" && showData()}}/>
-                    <button onClick={showData} className="btn btn-success">Search</button>
+                    onKeyPress={(e)=>{e.key==="Enter" && searchData()}}/>
+                    <button onClick={searchData} className="btn btn-success">Search</button>
                     </div>
                     </div>
                     <div className="col-12 col-xl-4 " style={{position: "relative",left: "50%"}} >
@@ -156,7 +229,7 @@ try{
               />
             </div>
             <div className="form-group ">
-              <label htmlFor="propertyStatus">Amenities Status</label>
+              <label htmlFor="propertyStatus">Status</label>
               <select
                 className="form-control" 
                 value={amenities.status}
@@ -216,7 +289,7 @@ try{
                           formUpdateRef.current.openForm(data);
                         }}><i className="fas fa-edit"></i></Button>
           <Button className='btn btn-sm' style={{backgroundColor:"white"}}  onClick={() => {
-                    if(window.confirm("Are you sure want to delete ?")){ deleteAmenities(data._id)} }}><i className="fas fa-trash" style={{color:"red"}}></i>
+                    handleClickOpen(data._id) }}><i className="fas fa-trash" style={{color:"red"}}></i>
               </Button>  </div></td>
                             </tr>
                             )
@@ -227,6 +300,25 @@ try{
                     </table>
                   </div>
                 </div>
+                <ReactPaginate
+        previousLabel={"previous"}
+        nextLabel={"next"}
+        breakLabel={"..."}
+        pageCount={amenitiesData.numberofPage}
+        marginPagesDisplayed={2}
+        pageRangeDisplayed={3}
+        onPageChange={handlePageClick}
+        containerClassName={"pagination justify-content-center"}
+        pageClassName={"page-item"}
+        pageLinkClassName={"page-link"}
+        previousClassName={"page-item"}
+        previousLinkClassName={"page-link"}
+        nextClassName={"page-item"}
+        nextLinkClassName={"page-link"}
+        breakClassName={"page-item"}
+        breakLinkClassName={"page-link"}
+        activeClassName={"active"}
+      />
               </div>
             </div>
       
@@ -325,7 +417,7 @@ return {...prev,[name]:value}
               />
             </div>
             <div className="form-group ">
-              <label htmlFor="propertyStatus">Amenities Status</label>
+              <label htmlFor="propertyStatus">Status</label>
               <select
                 className="form-control" 
                 name='status'

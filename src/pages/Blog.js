@@ -4,14 +4,28 @@ import React,{
     useImperativeHandle,
     useRef, 
    forwardRef} from 'react';
+   import ReactPaginate from "react-paginate";
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogTitle from '@mui/material/DialogTitle';
 import {ApiBaseUrl, ImageBaseUrl} from '../config/ApiBaseUrl';
 import { ToastContainer, toast } from 'react-toastify';
 import {Button,Modal} from 'react-bootstrap'
+
 const Blog = () => {
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     const formUpdateRef=useRef();
+
+    const [open, setOpen] = useState({show:false,id:null});
+
+    const handleClickOpen = (id) => {
+      setOpen({show:true,id});
+    };
+    const handleClickClose = () => {
+      setOpen({show:false,id:null});
+    };
 
     const [search,setSearch]=useState("")
 
@@ -74,7 +88,7 @@ else{
 
     const showData=async()=>{
         try{
-            const res=await fetch(`${ApiBaseUrl}/blog?keyword=${search}`,{
+            const res=await fetch(`${ApiBaseUrl}/blog?page=1`,{
                 method:"GET",
                 headers:{
                     "Content-Type":"application/json",
@@ -94,9 +108,9 @@ else{
 
     }
 
-    const deleteBlog=async(id)=>{
+    const deleteBlog=async()=>{
         try{
-const res=await fetch(`${ApiBaseUrl}/blog/${id}`,{
+const res=await fetch(`${ApiBaseUrl}/blog/${open.id}`,{
     method:"DELETE",
     headers:{
         "Content-Type":"application/json",
@@ -111,6 +125,7 @@ toast.success(data.message,{
     position: "top-center",
     autoClose: 4000,
 })
+setOpen({show:false,id:null})
 showData();
 }
         }catch(err){
@@ -119,9 +134,69 @@ toast.error(err)
         }
     }
 
+    const fetchBlog = async (currentPage) => {
+      try{
+        const res=await fetch(`${ApiBaseUrl}/blog?page=${currentPage}`,{
+          method:"GET",
+          headers:{
+              "Content-Type":"application/json",
+              "authorization":token
+          },
+        })
+      const data = await res.json();
+      return data;
+    }catch(err){
+      console.log(err)
+    }
+  }
+    const handlePageClick=async(data)=>{
+      let currentPage = data.selected + 1;
+      const dataFromServer = await fetchBlog(currentPage);
+
+      setBlogData(dataFromServer);
+    }
+
+    const searchData=async()=>{
+      try{
+        const res=await fetch(`${ApiBaseUrl}/getBlog?keyword=${search}`,{
+          method:"GET",
+       
+          headers:{
+              Accept:"application/json",
+              "Content-Type":"application/json",
+              "authorization":token
+          },
+        })
+        const data=await res.json();
+        if(res.status===400 || !data){
+          console.log(data.message)
+        }else{
+          setBlogData(data)
+        }
+      }catch(err){
+        console.log(err)
+      }
+    }
     return (
         <>
         <UpdateForm ref={formUpdateRef} showData={showData}/>
+        <Dialog
+        open={open.show}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Are you Sure want to Delete ?"}
+        </DialogTitle>
+       
+        <DialogActions>
+          <Button onClick={handleClickClose}>Cancel</Button>
+          <Button onClick={deleteBlog} autoFocus>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog> 
         <div className="main-panel">
         <div className="content-wrapper">
           <div className="row">
@@ -132,8 +207,8 @@ toast.error(err)
                     <div className="form-group" style={{display:"flex"}}>
                     <input type="search" className="form-control" placeholder="Search" 
                     onChange={(e)=>{setSearch(e.target.value)}}
-                    onKeyPress={(e)=>{e.key==="Enter" && showData()}}/>
-                    <button onClick={showData} className="btn btn-success">Search</button>
+                    onKeyPress={(e)=>{e.key==="Enter" && searchData()}}/>
+                    <button onClick={searchData} className="btn btn-success">Search</button>
                     </div>
                     </div>
                     <div className="col-12 col-xl-4 " style={{position: "relative",left: "50%"}} >
@@ -259,7 +334,7 @@ toast.error(err)
                           formUpdateRef.current.openForm(data);
                         }}><i className="fas fa-edit"></i></button>
           <button className='btn btn-sm' style={{backgroundColor:"white"}}  onClick={() => {
-                    if(window.confirm("Are you sure want to delete ?")){ deleteBlog(data._id)} }}><i className="fas fa-trash" style={{color:"red"}}></i>
+                   handleClickOpen(data._id) }}><i className="fas fa-trash" style={{color:"red"}}></i>
               </button>  </div></td>
                             </tr>
                             )
@@ -270,9 +345,27 @@ toast.error(err)
                     </table>
                   </div>
                 </div>
+                <ReactPaginate
+        previousLabel={"previous"}
+        nextLabel={"next"}
+        breakLabel={"..."}
+        pageCount={blogData.numberofPage}
+        marginPagesDisplayed={2}
+        pageRangeDisplayed={3}
+        onPageChange={handlePageClick}
+        containerClassName={"pagination justify-content-center"}
+        pageClassName={"page-item"}
+        pageLinkClassName={"page-link"}
+        previousClassName={"page-item"}
+        previousLinkClassName={"page-link"}
+        nextClassName={"page-item"}
+        nextLinkClassName={"page-link"}
+        breakClassName={"page-item"}
+        breakLinkClassName={"page-link"}
+        activeClassName={"active"}
+      />
               </div>
             </div>
-      
        </div>
        </div>
        </div> 

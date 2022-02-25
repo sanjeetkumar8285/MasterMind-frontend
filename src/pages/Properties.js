@@ -4,9 +4,13 @@ import React,{
   useImperativeHandle,
   useRef, 
  forwardRef} from 'react';
+ import ReactPaginate from "react-paginate";
 import { Button, Modal } from 'react-bootstrap'
 import {ApiBaseUrl} from '../config/ApiBaseUrl';
 import { ToastContainer, toast } from 'react-toastify';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogTitle from '@mui/material/DialogTitle';
 
 const Properties = () => {
   const [show, setShow] = useState(false);
@@ -14,6 +18,15 @@ const Properties = () => {
   const handleShow = () => setShow(true);
 
   const formUpdateRef=useRef();
+  const [open, setOpen] = useState({show:false,id:null});
+
+  const handleClickOpen = (id) => {
+    setOpen({show:true,id});
+  };
+  const handleClickClose = () => {
+    setOpen({show:false,id:null});
+  };
+
   const [search,setSearch]=useState("")
   const [propertyStatusData,setPropertyStatusData]=useState({}); //this state is used for storing data of propertyStatus
   const [propertyTypeData,setPropertyTypeData]=useState({});    //this state is used for storing data of propertyType
@@ -63,7 +76,7 @@ const Properties = () => {
   const showData = async () => {
     console.log(token)
     try {
-      const res = await fetch(`${ApiBaseUrl}/property?keyword=${search}`, {
+      const res = await fetch(`${ApiBaseUrl}/property?page=1`, {
         method: "GET",
         headers: {
           Accept: "application/json",
@@ -83,9 +96,9 @@ const Properties = () => {
     }
   }
 
-  const deleteProperty = async (id) => {
+  const deleteProperty = async () => {
     try {
-      const res = await fetch(`${ApiBaseUrl}/property/${id}`, {
+      const res = await fetch(`${ApiBaseUrl}/property/${open.id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -101,6 +114,7 @@ const Properties = () => {
           position: "top-center",
           autoClose: 4000,
           });
+          setOpen({show:false,id:null})
         showData();
       }
     } catch (err) {
@@ -224,7 +238,7 @@ else{
 
 const getPropertyType=async()=>{
   try{
-const res=await fetch(`${ApiBaseUrl}/propertyType`,{
+const res=await fetch(`${ApiBaseUrl}/getPropertyType`,{
   method:"GET", 
   headers:{
     "Content-Type":"application/json",
@@ -246,7 +260,7 @@ setPropertyTypeData(data)
 
 const getPropertyStatus=async()=>{
   try{
-const res=await fetch(`${ApiBaseUrl}/propertyStatus`,{
+const res=await fetch(`${ApiBaseUrl}/getPropertyStatus`,{
   method:"GET", 
   headers:{
     "Content-Type":"application/json",
@@ -267,7 +281,7 @@ else{
 
 const getAmenities=async()=>{
   try{
-    const res=await fetch(`${ApiBaseUrl}/amenities`,{
+    const res=await fetch(`${ApiBaseUrl}/getAmenities`,{
       method:"GET", 
       headers:{
         "Content-Type":"application/json",
@@ -286,9 +300,70 @@ const getAmenities=async()=>{
       }
 }
 
+const fetchProperty = async (currentPage) => {
+  try{
+    const res=await fetch(`${ApiBaseUrl}/property?page=${currentPage}`,{
+      method:"GET",
+      headers:{
+          "Content-Type":"application/json",
+          "authorization":token
+      },
+    })
+  const data = await res.json();
+  return data;
+}catch(err){
+  console.log(err)
+}
+}
+const handlePageClick=async(data)=>{
+  let currentPage = data.selected + 1;
+  const dataFromServer = await fetchProperty(currentPage);
+
+  setPropertyData(dataFromServer);
+}
+
+const searchData=async()=>{
+  try{
+    const res=await fetch(`${ApiBaseUrl}/getProperty?keyword=${search}`,{
+      method:"GET",
+   
+      headers:{
+          Accept:"application/json",
+          "Content-Type":"application/json",
+          "authorization":token
+      },
+    })
+    const data=await res.json();
+    if(res.status===400 || !data){
+      console.log(data.message)
+    }else{
+      setPropertyData(data)
+    }
+  }catch(err){
+    console.log(err)
+  }
+}
   return (
     <>
     <UpdateForm ref={formUpdateRef} showData={showData} />
+    <Dialog
+        open={open.show}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Are you Sure want to Delete ?"}
+        </DialogTitle>
+       
+        <DialogActions>
+          <Button onClick={handleClickClose}>Cancel</Button>
+          <Button onClick={deleteProperty} autoFocus>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <div className="main-panel">
         <div className="content-wrapper">
           <div className="row">
@@ -298,8 +373,8 @@ const getAmenities=async()=>{
                     <div className="form-group" style={{display:"flex"}}>
                     <input type="search" className="form-control" placeholder="Search"
                      onChange={(e)=>{setSearch(e.target.value)}}
-                     onKeyPress={(e)=>{e.key==="Enter" && showData()}}/>
-                    <button onClick={showData} className="btn btn-success">Search</button>
+                     onKeyPress={(e)=>{e.key==="Enter" && searchData()}}/>
+                    <button onClick={searchData} className="btn btn-success">Search</button>
                     </div>
                     </div>
                     <div className="col-12 col-xl-4 " style={{position: "relative",left: "50%"}} >
@@ -712,7 +787,7 @@ const getAmenities=async()=>{
                           formUpdateRef.current.openForm(data);
                         }}><i className="fas fa-edit"></i></Button>
                                   <Button className='btn btn-sm' style={{ backgroundColor: "white" }} onClick={() => {
-                                    if (window.confirm("Are you sure want to delete ?")) { deleteProperty(data._id) }
+                                   handleClickOpen(data._id)
                                   }}><i className="fas fa-trash" style={{ color: "red" }}></i>
                                   </Button>  </div></td>
                               </tr>
@@ -724,6 +799,25 @@ const getAmenities=async()=>{
                     </table>
                   </div>
                 </div>
+                <ReactPaginate
+        previousLabel={"previous"}
+        nextLabel={"next"}
+        breakLabel={"..."}
+        pageCount={propertyData.numberofPage}
+        marginPagesDisplayed={2}
+        pageRangeDisplayed={3}
+        onPageChange={handlePageClick}
+        containerClassName={"pagination justify-content-center"}
+        pageClassName={"page-item"}
+        pageLinkClassName={"page-link"}
+        previousClassName={"page-item"}
+        previousLinkClassName={"page-link"}
+        nextClassName={"page-item"}
+        nextLinkClassName={"page-link"}
+        breakClassName={"page-item"}
+        breakLinkClassName={"page-link"}
+        activeClassName={"active"}
+      />
               </div>
             </div>
 
