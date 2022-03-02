@@ -29,11 +29,26 @@ const Sidebar = () => {
           </li>
 
           <li className="nav-item">
+            <Link className="nav-link" to="/seller">
+            <i className="mdi mdi-account menu-icon"></i>
+              <span className="menu-title">Seller</span>
+            </Link>
+          </li>
+
+          <li className="nav-item">
+            <Link className="nav-link" to="/builder">
+              <i className="mdi mdi-account menu-icon"></i>
+              <span className="menu-title">Builder</span>
+            </Link>
+          </li>
+
+          <li className="nav-item">
             <Link className="nav-link" to="/blog">
               <i className="mdi mdi-blogger menu-icon"></i>
               <span className="menu-title">Blogs</span>
             </Link>
           </li>
+          
           {/* <li className="nav-item">
             <a className="nav-link" data-bs-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
               <i className="mdi mdi-account menu-icon"></i>

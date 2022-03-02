@@ -316,7 +316,7 @@ try{
         previousLabel={"previous"}
         nextLabel={"next"}
         breakLabel={"..."}
-        pageCount={propertyStatusData.numberofPage}
+        pageCount={Math.ceil(propertyStatusData.numberofPage)}
         marginPagesDisplayed={2}
         pageRangeDisplayed={3}
         onPageChange={handlePageClick}

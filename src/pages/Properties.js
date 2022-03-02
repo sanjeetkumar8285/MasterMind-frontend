@@ -31,6 +31,8 @@ const Properties = () => {
   const [propertyStatusData,setPropertyStatusData]=useState({}); //this state is used for storing data of propertyStatus
   const [propertyTypeData,setPropertyTypeData]=useState({});    //this state is used for storing data of propertyType
   const [amenitiesData,setAmenitiesData]=useState({});      ////this state is used for storing data of amenities
+  const [sellerData,setSellerData]=useState({});
+  const [builderData,setBuilderData]=useState({});
 
   const [formData, setFormData] = useState({
     name: "",
@@ -71,6 +73,8 @@ const Properties = () => {
     getPropertyType();
     getPropertyStatus();
     getAmenities();
+    getSeller();
+    getBuilder();
   }, [])
 
   const showData = async () => {
@@ -190,7 +194,7 @@ else{
         body: myForm
       })
       const data = await res.json();
-      console.log("dataaaa" + data.err)
+      console.log(data.err)
       if (res.status === 400 || !data) {
         console.log("something went wrong")
         toast.error(data.message)
@@ -200,31 +204,7 @@ else{
           position: "top-center",
           autoClose: 4000,
           });
-        setFormData({name: "",
-        price: "",
-        propertyNo:"",
-        propertyStatus: "",
-        propertyType: "",
-        about: "",
-        sportsAndOutdoor: "",
-        clubHouse: "",
-        specifications: "",
-        greenArea: "",
-        fittingAndFurshing: "",
-        amenities: [],
-        areaSize: "",
-        areaSizePrefix: "",
-        landArea: "",
-        landAreaPrefix: "",
-        bedroom: "",
-        state:"",
-        addressDetails: "",
-        latitude: "",
-        longitude: "",
-        brochureImage: "",
-        mapImage: "",
-        images: [],
-        status: ""}) // set state null
+        setFormData({}) // set state null
       handleClose();
       showData();
       }
@@ -294,6 +274,47 @@ const getAmenities=async()=>{
     }
     else{
       setAmenitiesData(data)
+    }
+      }catch(err){
+        console.log(err)
+      }
+}
+
+const getSeller=async()=>{
+  try{
+    const res=await fetch(`${ApiBaseUrl}/getSeller`,{
+      method:"GET", 
+      headers:{
+        "Content-Type":"application/json",
+        "authorization":token
+      },
+    })
+    const data=await res.json();
+    if(res.status===400 || !data){
+      console.log("some error occur while fetching seller")
+    }
+    else{
+      setSellerData(data)
+    }
+      }catch(err){
+        console.log(err)
+      }
+}
+const getBuilder=async()=>{
+  try{
+    const res=await fetch(`${ApiBaseUrl}/getBuilder`,{
+      method:"GET", 
+      headers:{
+        "Content-Type":"application/json",
+        "authorization":token
+      },
+    })
+    const data=await res.json();
+    if(res.status===400 || !data){
+      console.log("some error occur while fetching builder data")
+    }
+    else{
+      setBuilderData(data)
     }
       }catch(err){
         console.log(err)
@@ -431,14 +452,50 @@ const searchData=async()=>{
                         </div>
 
                         <div className="row">
+                          <div className="col-md-4">
+                            <div className="form-group">
+                              <label htmlFor="amt">Booking Amount</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Booking Amount"
+                                name="bookingAmount"
+                                value={formData.bookingAmount}
+                                onChange={handleInput}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4">
+                            <div className="form-group">
+                              <label htmlFor="ownerShip"> OwnerShip</label>
+                             <select className='form-control' name='ownership' defaultValue={formData.ownership || ""} onChange={handleInput}>
+                             <option value="" disabled  >Select OwnerShip</option>
+                               <option value="Builder">Builder</option>
+                               <option value="Seller">Seller</option>
+                             </select>
+                            </div>
+                          </div>
+                          <div className="col-md-4">
+                            <div className="form-group">
+                              <label htmlFor="saleType">Sale Type</label>
+                              <select className='form-control' name='saleType' defaultValue={formData.saleType || ""} onChange={handleInput}>
+                              <option value="" disabled  >Select SaleType</option>
+                               <option value="Old">Old</option>
+                               <option value="New">New</option>
+                             </select>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="row">
 
                           <div className="col-md-6">
                             <div className="form-group">
                               <label htmlFor="PropertyType">Property Type</label>
                               <select
                                 className="form-control"
-                                name="propertyType" value={formData.propertyType} onChange={handleInput}>
-                                   <option value="" disabled selected >
+                                name="propertyType" defaultValue={formData.propertyType || ""} onChange={handleInput}>
+                                   <option value="" disabled  >
                                   Select Type
                                 </option>
                                   {propertyTypeData.data?.map((ele,index)=>{
@@ -453,8 +510,8 @@ const searchData=async()=>{
                               <select
                                 className="form-control"
                                 name="propertyStatus"
-                                value={formData.propertyStatus} onChange={handleInput}>
-                                <option value="" disabled selected>
+                                defaultValue={formData.propertyStatus || ""} onChange={handleInput}>
+                                <option value="" disabled >
                                   Select Status
                                 </option>
                                   {propertyStatusData.data?.map((ele,index)=>{
@@ -464,11 +521,47 @@ const searchData=async()=>{
                             </div>
                           </div>
                         </div>
+
+                        <div className="row">
+
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label htmlFor="seller">Select Seller</label>
+                            <select
+                              className="form-control"
+                              name="sellerName" defaultValue={formData.propertyType || ""} onChange={handleInput}>
+                                <option value="" disabled  >
+                                Select Seller
+                              </option>
+                                {sellerData.data?.map((ele,index)=>{
+                                  return <option key={index} value={ele.sellerName}>{ele.sellerName}</option>
+                                })}
+                            </select>
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label htmlFor="builder">Select Builder</label>
+                            <select
+                              className="form-control"
+                              name="builderName"
+                              defaultValue={formData.builderName || ""} onChange={handleInput}>
+                              <option value="" disabled >
+                                Select Builder
+                              </option>
+                                {builderData.data?.map((ele,index)=>{
+                                  return <option key={index} value={ele.builderName}>{ele.builderName}</option>
+                                })}
+                            </select>
+                          </div>
+                        </div>
+                        </div>
+
                         <div className="row">
                           <div className="col-md-12">
                             <div className="form-group">
                               <label htmlFor="about">About</label>
-                              <textarea className="form-control" style={{resize:"vertical"}} name="about" placeHolder="About Property Details "
+                              <textarea className="form-control" style={{resize:"vertical"}} name="about" placeholder="About Property Details "
                                rows="6" value={formData.about} onChange={handleInput} ></textarea>
                             </div>
                           </div>
@@ -582,8 +675,8 @@ const searchData=async()=>{
                           <div className="col-md-6">
                             <div className="form-group">
                               <label htmlFor="AreaPrefix">Area Size Prefix</label>
-                              <select className='form-control' name="areaSizePrefix" value={formData.areaSizePrefix} onChange={handleInput}>
-                                <option value="" disabled selected>Select</option>
+                              <select className='form-control' name="areaSizePrefix" value={formData.areaSizePrefix || ""} onChange={handleInput}>
+                                <option value="" disabled >Select</option>
                                 <option value="BHK">BHK</option>
                                 <option value="Square Foot">Square Foot</option>
                                 <option value="Foot">Foot</option>
@@ -610,8 +703,8 @@ const searchData=async()=>{
                           <div className="col-md-6">
                             <div className="form-group">
                               <label htmlFor="AreaPrefix">Land Area Prefix</label>
-                              <select className='form-control' name="landAreaPrefix" value={formData.landAreaPrefix} onChange={handleInput}>
-                                <option value="" disabled selected>Select</option>
+                              <select className='form-control' name="landAreaPrefix" value={formData.landAreaPrefix || ""} onChange={handleInput}>
+                                <option value="" disabled >Select</option>
                                 <option value="Square Foot">Square Foot</option>
                                 <option value="Foot">Foot</option>
                                 <option value="Square Meter">Square Meter</option>
@@ -632,14 +725,26 @@ const searchData=async()=>{
                               />
                             </div>
                           </div>
+                          <div className="col-md-6">
+                            <div className="form-group">
+                              <label htmlFor="areaSize">Total Floor</label>
+                              <input
+                                type="number"
+                                className="form-control"
+                                name="totalFloor"
+                                value={formData.totalFloor}
+                                onChange={handleInput}
+                              />
+                            </div>
+                          </div>
                         </div>
                         <div className="row">
                           <h4 className="text-divider"><span>Address Details</span></h4>
                           <div className="col-md-6">
                             <div className="form-group">
                               <label htmlFor="State">State</label>
-                        <select  className="form-control" name='state' value={formData.state} onChange={handleInput}>
-                          <option value="" disabled>Select Status</option>
+                        <select  className="form-control" name='state' value={formData.state || ""} onChange={handleInput}>
+                          <option value="" disabled>Select State</option>
                           <option value="Delhi">Delhi</option>
                           <option value="Noida">Noida</option>
                           <option value="Gurgaon">Gurgaon</option>
@@ -729,8 +834,8 @@ const searchData=async()=>{
                           <div className="col-md-6">
                             <div className="form-group">
                               <label htmlFor="status">Status</label>
-                              <select name='status' className='form-control' value={formData.status} onChange={handleInput}>
-                                <option value="" disabled selected>Select</option>
+                              <select name='status' className='form-control' value={formData.status || ""} onChange={handleInput}>
+                                <option value="" disabled >Select</option>
                                 <option value="true">Active</option>
                                 <option value="false">Inactive</option>
                               </select>
@@ -803,7 +908,7 @@ const searchData=async()=>{
         previousLabel={"previous"}
         nextLabel={"next"}
         breakLabel={"..."}
-        pageCount={propertyData.numberofPage}
+        pageCount={Math.ceil(propertyData.numberofPage)}
         marginPagesDisplayed={2}
         pageRangeDisplayed={3}
         onPageChange={handlePageClick}
@@ -839,13 +944,21 @@ const UpdateForm = forwardRef((props, ref) => {
   const [propertyStatusData,setPropertyStatusData]=useState({}); //this state is used for storing data of propertyStatus
   const [propertyTypeData,setPropertyTypeData]=useState({});    //this state is used for storing data of propertyType
   const [amenitiesData,setAmenitiesData]=useState({}); 
+  const [sellerData,setSellerData]=useState({});
+  const [builderData,setBuilderData]=useState({});
+
   const [id,setId]=useState("")
   const [formData,setFormData]=useState({
   name: "",
   propertyNo:"",
   price: "",
+  bookingAmount:"",
+  ownership:"",
+  saleType:"",
   propertyStatus: "",
   propertyType: "",
+  sellerName:"",
+  builderName:"",
   about: "",
   sportsAndOutdoor: "",
   clubHouse: "",
@@ -876,6 +989,8 @@ const UpdateForm = forwardRef((props, ref) => {
     getAmenities();
     getPropertyStatus();
     getPropertyType();
+    getSeller();
+    getBuilder();
   },[])   
 
 
@@ -914,7 +1029,6 @@ else{
     }
   }
 
-console.log(id)
   useImperativeHandle(ref, () => ({
     openForm(dt) {
       if (dt?._id) {
@@ -923,8 +1037,13 @@ console.log(id)
     name: dt.name,
     propertyNo:dt.propertyNo,
     price: dt.price,
+    bookingAmount:dt.bookingAmount,
+    ownership:dt.ownership,
+    saleType:dt.saleType,
     propertyStatus: dt.propertyStatus,
     propertyType: dt.propertyType,
+    sellerName:dt.seller.sellerName,
+    builderName:dt.builder.builderName,
     about: dt.about,
     sportsAndOutdoor: dt.rating.sportsAndOutdoor,
     clubHouse: dt.rating.clubHouse,
@@ -937,6 +1056,7 @@ console.log(id)
     landArea: dt.description.landArea,
     landAreaPrefix: dt.description.landAreaPrefix,
     bedroom: dt.description.bedroom,
+    totalFloor:dt.description.totalFloor,
     state:dt.address.state,
     addressDetails: dt.address.addressDetails,
     latitude: dt.address.latitude,
@@ -981,9 +1101,9 @@ console.log(id)
         body: myForm
       })
       const data = await res.json();
-      console.log("dataaaa" + data.err)
+      console.log("dataaaa " + data.err)
       if (res.status === 400 || !data) {
-        console.log("something went wrong")
+        console.log(data.err)
         toast.error(data.message)
       }
       else {
@@ -1065,6 +1185,48 @@ console.log(id)
                   console.log(err)
                 }
           }
+
+          const getSeller=async()=>{
+            try{
+              const res=await fetch(`${ApiBaseUrl}/getSeller`,{
+                method:"GET", 
+                headers:{
+                  "Content-Type":"application/json",
+                  "authorization":token
+                },
+              })
+              const data=await res.json();
+              if(res.status===400 || !data){
+                console.log("some error occur while fetching seller")
+              }
+              else{
+                setSellerData(data)
+              }
+                }catch(err){
+                  console.log(err)
+                }
+          }
+          const getBuilder=async()=>{
+            try{
+              const res=await fetch(`${ApiBaseUrl}/getBuilder`,{
+                method:"GET", 
+                headers:{
+                  "Content-Type":"application/json",
+                  "authorization":token
+                },
+              })
+              const data=await res.json();
+              if(res.status===400 || !data){
+                console.log("some error occur while fetching builder data")
+              }
+              else{
+                setBuilderData(data)
+              }
+                }catch(err){
+                  console.log(err)
+                }
+          }
+          
          
   return (
     <>
@@ -1074,7 +1236,7 @@ console.log(id)
                       <Modal.Title>Update Property</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                      <form className="forms-sample">
+                    <form className="forms-sample">
                         <div className="row">
                           <div className="col-md-4">
                             <div className="form-group">
@@ -1118,14 +1280,50 @@ console.log(id)
                         </div>
 
                         <div className="row">
+                          <div className="col-md-4">
+                            <div className="form-group">
+                              <label htmlFor="amt">Booking Amount</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Booking Amount"
+                                name="bookingAmount"
+                                value={formData.bookingAmount}
+                                onChange={handleInput}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4">
+                            <div className="form-group">
+                              <label htmlFor="ownerShip"> OwnerShip</label>
+                             <select className='form-control' name='ownership' defaultValue={formData.ownership} onChange={handleInput}>
+                             <option value="" disabled  >Select OwnerShip</option>
+                               <option value="Builder">Builder</option>
+                               <option value="Seller">Seller</option>
+                             </select>
+                            </div>
+                          </div>
+                          <div className="col-md-4">
+                            <div className="form-group">
+                              <label htmlFor="saleType">Sale Type</label>
+                              <select className='form-control' name='saleType' defaultValue={formData.saleType} onChange={handleInput}>
+                              <option value="" disabled  >Select SaleType</option>
+                               <option value="Old">Old</option>
+                               <option value="New">New</option>
+                             </select>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="row">
 
                           <div className="col-md-6">
                             <div className="form-group">
                               <label htmlFor="PropertyType">Property Type</label>
                               <select
                                 className="form-control"
-                                name="propertyType" value={formData.propertyType} onChange={handleInput}>
-                                   <option value="" disabled selected >
+                                name="propertyType" defaultValue={formData.propertyType} onChange={handleInput}>
+                                   <option value="" disabled  >
                                   Select Type
                                 </option>
                                   {propertyTypeData.data?.map((ele,index)=>{
@@ -1140,8 +1338,8 @@ console.log(id)
                               <select
                                 className="form-control"
                                 name="propertyStatus"
-                                value={formData?.propertyStatus || ""} onChange={handleInput}>
-                                <option value="" disabled selected>
+                                defaultValue={formData.propertyStatus} onChange={handleInput}>
+                                <option value="" disabled >
                                   Select Status
                                 </option>
                                   {propertyStatusData.data?.map((ele,index)=>{
@@ -1151,11 +1349,47 @@ console.log(id)
                             </div>
                           </div>
                         </div>
+
+                        <div className="row">
+
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label htmlFor="seller">Select Seller</label>
+                            <select
+                              className="form-control"
+                              name="sellerName" defaultValue={formData.propertyType} onChange={handleInput}>
+                                <option value="" disabled  >
+                                Select Seller
+                              </option>
+                                {sellerData.data?.map((ele,index)=>{
+                                  return <option key={index} value={ele.sellerName}>{ele.sellerName}</option>
+                                })}
+                            </select>
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="form-group">
+                            <label htmlFor="builder">Select Builder</label>
+                            <select
+                              className="form-control"
+                              name="builderName"
+                              defaultValue={formData.builderName} onChange={handleInput}>
+                              <option value="" disabled >
+                                Select Builder
+                              </option>
+                                {builderData.data?.map((ele,index)=>{
+                                  return <option key={index} value={ele.builderName}>{ele.builderName}</option>
+                                })}
+                            </select>
+                          </div>
+                        </div>
+                        </div>
+
                         <div className="row">
                           <div className="col-md-12">
                             <div className="form-group">
                               <label htmlFor="about">About</label>
-                              <textarea className="form-control" style={{resize:"vertical"}} name="about" placeHolder="About Property Details "
+                              <textarea className="form-control" style={{resize:"vertical"}} name="about" placeholder="About Property Details "
                                rows="6" value={formData.about} onChange={handleInput} ></textarea>
                             </div>
                           </div>
@@ -1177,6 +1411,7 @@ console.log(id)
                          })}
                         
                         </div> 
+
 
 
                         <div className="row">
@@ -1271,7 +1506,7 @@ console.log(id)
                             <div className="form-group">
                               <label htmlFor="AreaPrefix">Area Size Prefix</label>
                               <select className='form-control' name="areaSizePrefix" value={formData.areaSizePrefix} onChange={handleInput}>
-                                <option value="" disabled selected>Select</option>
+                                <option value="" disabled >Select</option>
                                 <option value="BHK">BHK</option>
                                 <option value="Square Foot">Square Foot</option>
                                 <option value="Foot">Foot</option>
@@ -1299,7 +1534,7 @@ console.log(id)
                             <div className="form-group">
                               <label htmlFor="AreaPrefix">Land Area Prefix</label>
                               <select className='form-control' name="landAreaPrefix" value={formData.landAreaPrefix} onChange={handleInput}>
-                                <option value="" disabled selected>Select</option>
+                                <option value="" disabled >Select</option>
                                 <option value="Square Foot">Square Foot</option>
                                 <option value="Foot">Foot</option>
                                 <option value="Square Meter">Square Meter</option>
@@ -1320,6 +1555,18 @@ console.log(id)
                               />
                             </div>
                           </div>
+                          <div className="col-md-6">
+                            <div className="form-group">
+                              <label htmlFor="areaSize">Total Floor</label>
+                              <input
+                                type="number"
+                                className="form-control"
+                                name="totalFloor"
+                                value={formData.totalFloor}
+                                onChange={handleInput}
+                              />
+                            </div>
+                          </div>
                         </div>
                         <div className="row">
                           <h4 className="text-divider"><span>Address Details</span></h4>
@@ -1327,7 +1574,7 @@ console.log(id)
                             <div className="form-group">
                               <label htmlFor="State">State</label>
                         <select  className="form-control" name='state' value={formData.state} onChange={handleInput}>
-                          <option value="" disabled>Select Status</option>
+                          <option value="" disabled>Select State</option>
                           <option value="Delhi">Delhi</option>
                           <option value="Noida">Noida</option>
                           <option value="Gurgaon">Gurgaon</option>
@@ -1343,7 +1590,7 @@ console.log(id)
                               <textarea className="form-control" rows="4" name="addressDetails" value={formData.addressDetails} onChange={handleInput}></textarea>
                             </div>
                           </div>
-                      
+                         
                         </div>
                         <div className="row">
                         <div className="col-md-6">
@@ -1418,7 +1665,7 @@ console.log(id)
                             <div className="form-group">
                               <label htmlFor="status">Status</label>
                               <select name='status' className='form-control' value={formData.status} onChange={handleInput}>
-                                <option value="" disabled selected>Select</option>
+                                <option value="" disabled >Select</option>
                                 <option value="true">Active</option>
                                 <option value="false">Inactive</option>
                               </select>

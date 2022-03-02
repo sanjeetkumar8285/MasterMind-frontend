@@ -11,6 +11,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
+
 const PropertyType = () => {
   //this state is used to hide and show modal
   const [show, setShow] = useState(false);
@@ -19,7 +20,7 @@ const PropertyType = () => {
 
   const formUpdateRef=useRef();
 
-  const [open, setOpen] = useState({show:false,id:null});
+  const [open, setOpen] = useState({show:false,id:null}); // this state is used for open dialog box for delete
 
   const handleClickOpen = (id) => {
     setOpen({show:true,id});
@@ -323,7 +324,7 @@ try{
         previousLabel={"previous"}
         nextLabel={"next"}
         breakLabel={"..."}
-        pageCount={propertyTypeData.numberofPage}
+        pageCount={Math.ceil(propertyTypeData.numberofPage)}
         marginPagesDisplayed={2}
         pageRangeDisplayed={3}
         onPageChange={handlePageClick}

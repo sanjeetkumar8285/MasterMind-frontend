@@ -4,11 +4,12 @@ import React,{
   useImperativeHandle,
   useRef, 
  forwardRef} from 'react';
- import ReactPaginate from "react-paginate";
- import Dialog from '@mui/material/Dialog';
+
+import ReactPaginate from "react-paginate";
+import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
-import {ApiBaseUrl} from '../config/ApiBaseUrl';
+import {ApiBaseUrl,ImageBaseUrl} from '../config/ApiBaseUrl';
 import { Button, Modal } from 'react-bootstrap'
 import { ToastContainer, toast } from 'react-toastify';
 
@@ -34,9 +35,16 @@ const [amenities,setAmenities]=useState({});
 const handleInput=(e)=>{
   let name=e.target.name
   let value=e.target.value
-  setAmenities((prev)=>{
-return {...prev,[name]:value}
-})
+  if(name==='image'){
+    setAmenities((prev)=>{
+      return {...prev,[name]:e.target.files[0]}
+      })
+  }else{
+    setAmenities((prev)=>{
+      return {...prev,[name]:value}
+      })
+  }
+  
 }
 
 const token = localStorage.getItem("token")
@@ -69,19 +77,17 @@ const token = localStorage.getItem("token")
 
     const saveData=async(e)=>{
         e.preventDefault();
-        const {name,status}=amenities
+        let myForm=new FormData();
+        for(let prop in amenities){
+           myForm.append(prop,amenities[prop])
+        }
 try{
   const res=await fetch(`${ApiBaseUrl}/amenities`,{
     method:"POST",
-    Accept:"application/json",
     headers:{
-      "Content-Type":"application/json",
       "authorization":token
     },
-    body:JSON.stringify({
-      name,
-      status
-    })
+    body:myForm
   })
   const data=  await res.json();
  
@@ -205,6 +211,7 @@ try{
                     onKeyPress={(e)=>{e.key==="Enter" && searchData()}}/>
                     <button onClick={searchData} className="btn btn-success">Search</button>
                     </div>
+                 
                     </div>
                     <div className="col-12 col-xl-4 " style={{position: "relative",left: "50%"}} >
                     <Button variant="primary" style={{color:"white"}} onClick={handleShow}>
@@ -228,6 +235,19 @@ try{
                 placeholder="Amenities Name"
               />
             </div>
+           
+                            <div className="form-group">
+                              <label htmlFor="images">Image</label>
+                              <input
+                                type="file"
+                                className="form-control"
+                                name="image"
+                                accept="image/*"
+                                onChange={handleInput}
+                                
+                              />
+                            </div>
+                         
             <div className="form-group ">
               <label htmlFor="propertyStatus">Status</label>
               <select
@@ -270,6 +290,7 @@ try{
                       <thead>
                         <tr>
                           <th>S.No</th>
+                          <th>Image</th>
                           <th>Name</th>
                           <th>Status</th>
                           <th>Action</th>
@@ -281,6 +302,9 @@ try{
                             return (
                               <tr key={index}>
                               <th scope='row'>{index+1}</th>
+                              <td> <a href={`${ImageBaseUrl}/${data.image}`} target="_blank">
+                                  <img src={`${ImageBaseUrl}/${data.image}`} alt="not found"/>
+                                  </a></td>
                               <td>{data.name}</td>
                               <td>{data.status ? "Active" :"Inactive"}</td>
     
@@ -304,7 +328,7 @@ try{
         previousLabel={"previous"}
         nextLabel={"next"}
         breakLabel={"..."}
-        pageCount={amenitiesData.numberofPage}
+        pageCount={Math.ceil(amenitiesData.numberofPage)}
         marginPagesDisplayed={2}
         pageRangeDisplayed={3}
         onPageChange={handlePageClick}
@@ -344,9 +368,16 @@ const UpdateForm = forwardRef((props, ref) => {
   const handleInput=(e)=>{
     let name=e.target.name
     let value=e.target.value
-    setAmenities((prev)=>{
-return {...prev,[name]:value}
+    if(name==='image'){
+setAmenities((prev)=>{
+  return {...prev,[name]:e.target.files[0]}
 })
+    }else{
+      setAmenities((prev)=>{
+        return {...prev,[name]:value}
+        })
+    }
+    
 }
 
   useImperativeHandle(ref, () => ({
@@ -361,19 +392,19 @@ return {...prev,[name]:value}
   }));
 
   const updateData=async(e)=>{
-      const {_id,name,status}=amenities
-      e.preventDefault();
+    e.preventDefault();
+    let myForm=new FormData();
+    for(let prop in amenities){
+      myForm.append(prop,amenities[prop])
+   }
+      
       try{
-        const res=await fetch(`${ApiBaseUrl}/amenities/${_id}`,{
+        const res=await fetch(`${ApiBaseUrl}/amenities/${amenities._id}`,{
           method:"PUT",
-          Accept:"application/json",
           headers:{
-              "Content-Type":"application/json",
             "authorization":token
           },
-          body:JSON.stringify({
-              name,status
-          })
+          body:myForm
         })
         const data=  await res.json();
        
@@ -416,6 +447,19 @@ return {...prev,[name]:value}
                 placeholder="Amenities Name"
               />
             </div>
+
+            <div className="form-group">
+                              <label htmlFor="images">Image</label>
+                              <input
+                                type="file"
+                                className="form-control"
+                                name="image"
+                                accept="image/*"
+                                onChange={handleInput}
+                                
+                              />
+                            </div>
+
             <div className="form-group ">
               <label htmlFor="propertyStatus">Status</label>
               <select
