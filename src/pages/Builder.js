@@ -264,7 +264,7 @@ aria-describedby="alert-dialog-description"
                 <div className="form-group ">
               <label htmlFor="about">About Builder</label>
               <textarea className="form-control" style={{resize:"vertical"}} name="about"
-                    rows="4" value={builder.about} onChange={handleInput} ></textarea>
+                    rows="4" value={builder.about || ""} onChange={handleInput} ></textarea>
             </div>
             </div>
             </div>
@@ -275,7 +275,7 @@ aria-describedby="alert-dialog-description"
               <label htmlFor="Builder Status">Status</label>
               <select
                 className="form-control" 
-                value={builder.status}
+                value={builder.status || ""}
                 name="status"
                 onChange={handleInput}>
                 <option value="" disabled>

@@ -252,7 +252,7 @@ try{
               <label htmlFor="propertyStatus">Status</label>
               <select
                 className="form-control" 
-                value={amenities.status}
+                value={amenities.status || ""}
                 name="status"
                 onChange={handleInput}>
                 <option value="" disabled>
@@ -465,7 +465,7 @@ setAmenities((prev)=>{
               <select
                 className="form-control" 
                 name='status'
-                value={amenities.status}
+                value={amenities.status || ""}
                 onChange={handleInput}>
                 <option value="" disabled>
                   Select Status

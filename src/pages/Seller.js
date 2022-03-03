@@ -288,7 +288,7 @@ aria-describedby="alert-dialog-description"
               <label htmlFor="seller Status">Status</label>
               <select
                 className="form-control" 
-                value={seller.status}
+                value={seller.status || ""}
                 name="status"
                 onChange={handleInput}>
                 <option value="" disabled>
@@ -532,7 +532,7 @@ const UpdateForm = forwardRef((props, ref) => {
               <label htmlFor="seller Status">Status</label>
               <select
                 className="form-control" 
-                value={seller.status}
+                value={seller.status || ""}
                 name="status"
                 onChange={handleInput}>
                 <option value="" disabled>

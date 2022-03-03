@@ -204,7 +204,7 @@ else{
           position: "top-center",
           autoClose: 4000,
           });
-        setFormData({}) // set state null
+        setFormData({amenities:[]}) // set state null
       handleClose();
       showData();
       }
@@ -1050,7 +1050,7 @@ else{
     specifications: dt.rating.specifications,
     greenArea: dt.rating.greenArea,
     fittingAndFurshing: dt.rating.fittingAndFurshing,
-    amenities: dt.amenities,
+    amenities: dt.amenities.map((data)=>{return data.name}),
     areaSize: dt.description.areaSize,
     areaSizePrefix: dt.description.areaSizePrefix,
     landArea: dt.description.landArea,
@@ -1402,7 +1402,7 @@ else{
                                   <div className='col-md-3' key={index} >
                                   <div className="form-group"  style={{border:"2px dashed black",borderRadius:"5px"}}>
                                     <input type="checkbox" className="form-check-input" name="amenities" value={ele.name} onChange={handleInput} checked={
-                                     formData.amenities?.includes(ele.name) 
+                                     formData.amenities?.includes(ele.name)
                                     } />
                                     <label className="form-check-label">{ele.name}</label>
                                   </div>
