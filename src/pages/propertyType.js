@@ -189,7 +189,7 @@ try{
         <>
            <Dialog
         open={open.show}
-        onClose={handleClose}
+        onClose={handleClickClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >

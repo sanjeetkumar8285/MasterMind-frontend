@@ -35,31 +35,8 @@ const Properties = () => {
   const [builderData,setBuilderData]=useState({});
 
   const [formData, setFormData] = useState({
-    name: "",
-    propertyNo:"",
-    price: "",
-    propertyStatus: "",
-    propertyType: "",
-    about: "",
-    sportsAndOutdoor: "",
-    clubHouse: "",
-    specifications: "",
-    greenArea: "",
-    fittingAndFurshing: "",
-    amenities: [],
-    areaSize: "",
-    areaSizePrefix: "",
-    landArea: "",
-    landAreaPrefix: "",
-    bedroom: "",
-    state:"",
-    addressDetails: "",
-    latitude: "",
-    longitude: "",
-    brochureImage: "",
-    mapImage: "",
-    images: [],
-    status: ""
+    amenities: [],  
+    images: []
   })
 
 
@@ -369,7 +346,7 @@ const searchData=async()=>{
     <UpdateForm ref={formUpdateRef} showData={showData} />
     <Dialog
         open={open.show}
-        onClose={handleClose}
+        onClose={handleClickClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
@@ -713,7 +690,7 @@ const searchData=async()=>{
                           </div>
                         </div>
                         <div className="row">
-                          <div className="col-md-6">
+                          <div className="col-md-4">
                             <div className="form-group">
                               <label htmlFor="areaSize">BedRoom</label>
                               <input
@@ -725,7 +702,19 @@ const searchData=async()=>{
                               />
                             </div>
                           </div>
-                          <div className="col-md-6">
+                          <div className="col-md-4">
+                            <div className="form-group">
+                              <label htmlFor="bathroom">BathRoom</label>
+                              <input
+                                type="number"
+                                className="form-control"
+                                name="bathroom"
+                                value={formData.bathroom}
+                                onChange={handleInput}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4">
                             <div className="form-group">
                               <label htmlFor="areaSize">Total Floor</label>
                               <input
@@ -971,6 +960,7 @@ const UpdateForm = forwardRef((props, ref) => {
   landArea: "",
   landAreaPrefix: "",
   bedroom: "",
+  bathroom:"",
   state:"",
   addressDetails: "",
   latitude: "",
@@ -1056,6 +1046,7 @@ else{
     landArea: dt.description.landArea,
     landAreaPrefix: dt.description.landAreaPrefix,
     bedroom: dt.description.bedroom,
+    bathroom:dt.description.bathroom,
     totalFloor:dt.description.totalFloor,
     state:dt.address.state,
     addressDetails: dt.address.addressDetails,
@@ -1543,9 +1534,9 @@ else{
                           </div>
                         </div>
                         <div className="row">
-                          <div className="col-md-6">
+                          <div className="col-md-4">
                             <div className="form-group">
-                              <label htmlFor="areaSize">BedRoom</label>
+                              <label htmlFor="bedroom">BedRoom</label>
                               <input
                                 type="number"
                                 className="form-control"
@@ -1555,7 +1546,19 @@ else{
                               />
                             </div>
                           </div>
-                          <div className="col-md-6">
+                          <div className="col-md-4">
+                            <div className="form-group">
+                              <label htmlFor="bathroom">BathRoom</label>
+                              <input
+                                type="number"
+                                className="form-control"
+                                name="bathroom"
+                                value={formData.bathroom}
+                                onChange={handleInput}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4">
                             <div className="form-group">
                               <label htmlFor="areaSize">Total Floor</label>
                               <input

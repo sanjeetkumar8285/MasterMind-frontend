@@ -124,7 +124,7 @@ const validForm=()=>{
                                             <button type='submit' className="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn" onClick={submitFormData}>SIGN UP</button>
                                         </div>
                                         <div className="text-center mt-4 font-weight-light">
-                                            Already have an account? <Link to="/" className="text-primary">Login</Link>
+                                            Already have an account? <Link to="/login" className="text-primary">Login</Link>
                                         </div>
                                     </form>
                                 </div>

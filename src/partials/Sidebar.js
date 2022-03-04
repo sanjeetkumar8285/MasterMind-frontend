@@ -48,23 +48,19 @@ const Sidebar = () => {
               <span className="menu-title">Blogs</span>
             </Link>
           </li>
-          
-          {/* <li className="nav-item">
-            <a className="nav-link" data-bs-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
-              <i className="mdi mdi-account menu-icon"></i>
-              <span className="menu-title">User Pages</span>
+          <li className="nav-item">
+            <a className="nav-link" data-bs-toggle="collapse" href="#customer" aria-expanded="false" aria-controls="ui-basic">
+              <i className="mdi mdi-account-star menu-icon"></i>
+              <span className="menu-title">Customer Queries</span>
               <i className="menu-arrow"></i>
             </a>
-            <div className="collapse" id="auth">
+            <div className="collapse" id="customer">
               <ul className="nav flex-column sub-menu">
-                <li className="nav-item"> <a className="nav-link" href="pages/samples/login.html"> Login </a></li>
-                <li className="nav-item"> <a className="nav-link" href="pages/samples/login-2.html"> Login 2 </a></li>
-                <li className="nav-item"> <a className="nav-link" href="pages/samples/register.html"> Register </a></li>
-                <li className="nav-item"> <a className="nav-link" href="pages/samples/register-2.html"> Register 2 </a></li>
-                <li className="nav-item"> <Link className="nav-link" to="/testing"> Testing </Link></li>
+                <li className="nav-item"> <Link className="nav-link" to="/LoanRequestData">Loan Queries</Link></li>
+                <li className="nav-item"> <Link className="nav-link" to="/contactBuilderData">Contact Builder Queries</Link></li>
               </ul>
             </div>
-          </li> */}
+          </li>
 
         </ul>
       </nav>

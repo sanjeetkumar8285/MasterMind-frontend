@@ -10,7 +10,8 @@ import Amenities from './pages/Amenities';
 import Blog from './pages/Blog';
 import Seller from './pages/Seller';
 import Builder from './pages/Builder';
-
+import LoanData from './pages/LoanData';
+import BuilderContact from './pages/BuilderContact';
 const AppRoute = () => {
     return (
         <>
@@ -25,6 +26,8 @@ const AppRoute = () => {
   <Route path='/blog' element={<Blog/>}/>
   <Route path='/seller' element={<Seller/>}/>
   <Route path='/builder' element={<Builder/>}/>
+  <Route path='/LoanRequestData' element={<LoanData/>}/>
+  <Route path='/contactBuilderData' element={<BuilderContact/>}/>
   </Routes>
       </>
     );

@@ -182,7 +182,7 @@ toast.error(err)
         <UpdateForm ref={formUpdateRef} showData={showData}/>
         <Dialog
         open={open.show}
-        onClose={handleClose}
+        onClose={handleClickClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
